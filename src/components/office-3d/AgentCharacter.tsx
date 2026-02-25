@@ -9,8 +9,8 @@ import { STATUS_LABELS } from "@/lib/constants";
 import { position2dTo3d } from "@/lib/position-allocator";
 import { useOfficeStore } from "@/store/office-store";
 import { ErrorIndicator } from "./ErrorIndicator";
+import { SkillHologram } from "./SkillHologram";
 import { ThinkingIndicator } from "./ThinkingIndicator";
-import { ToolScreen } from "./ToolScreen";
 
 interface AgentCharacterProps {
   agent: VisualAgent;
@@ -29,6 +29,7 @@ export function AgentCharacter({ agent }: AgentCharacterProps) {
   const spawnDone = useRef(!agent.isSubAgent);
   const selectAgent = useOfficeStore((s) => s.selectAgent);
   const selectedAgentId = useOfficeStore((s) => s.selectedAgentId);
+  const openContextMenu = useOfficeStore((s) => s.openContextMenu);
   const [hovered, setHovered] = useState(false);
 
   const isSelected = selectedAgentId === agent.id;
@@ -84,6 +85,14 @@ export function AgentCharacter({ agent }: AgentCharacterProps) {
         e.stopPropagation();
         selectAgent(agent.id);
       }}
+      onContextMenu={(e) => {
+        e.stopPropagation();
+        e.nativeEvent.preventDefault();
+        openContextMenu(agent.id, {
+          x: e.nativeEvent.clientX,
+          y: e.nativeEvent.clientY,
+        });
+      }}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
@@ -116,7 +125,7 @@ export function AgentCharacter({ agent }: AgentCharacterProps) {
 
       {agent.status === "thinking" && <ThinkingIndicator />}
       {agent.status === "tool_calling" && agent.currentTool && (
-        <ToolScreen toolName={agent.currentTool.name} />
+        <SkillHologram tool={{ name: agent.currentTool.name }} position={[0.3, 0.5, -0.3]} />
       )}
       {agent.status === "error" && <ErrorIndicator />}
 

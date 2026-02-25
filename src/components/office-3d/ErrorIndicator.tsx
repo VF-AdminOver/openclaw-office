@@ -14,7 +14,7 @@ export function ErrorIndicator() {
   return (
     <mesh ref={ref} position={[0, 0.8, 0]}>
       <octahedronGeometry args={[0.1]} />
-      <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.3} />
+      <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={2} />
     </mesh>
   );
 }

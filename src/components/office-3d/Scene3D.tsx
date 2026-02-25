@@ -1,6 +1,8 @@
 import { OrbitControls, Html } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { useMemo } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { useMemo, useRef, useEffect } from "react";
+import * as THREE from "three";
 import { ZONES } from "@/lib/constants";
 import { position2dTo3d } from "@/lib/position-allocator";
 import { detectMeetingGroups } from "@/store/meeting-manager";
@@ -11,7 +13,8 @@ import { OfficeLayout3D } from "./OfficeLayout3D";
 import { ParentChildLine } from "./ParentChildLine";
 
 const SCENE_CENTER: [number, number, number] = [8, 0, 6];
-const BG_COLOR = "#e8ecf2";
+const BG_LIGHT = new THREE.Color("#e8ecf2");
+const BG_DARK = new THREE.Color("#0f1729");
 
 const MEETING_TABLE_CENTERS_2D = [
   { x: ZONES.meeting.x + ZONES.meeting.width / 2, y: ZONES.meeting.y + ZONES.meeting.height / 2 },
@@ -60,13 +63,33 @@ function MeetingLabels() {
   );
 }
 
+function BackgroundSync() {
+  const theme = useOfficeStore((s) => s.theme);
+  const { gl } = useThree();
+  const colorRef = useRef(new THREE.Color(theme === "light" ? BG_LIGHT : BG_DARK));
+
+  useEffect(() => {
+    gl.setClearColor(colorRef.current);
+  }, [gl]);
+
+  useFrame(() => {
+    const target = theme === "light" ? BG_LIGHT : BG_DARK;
+    colorRef.current.lerp(target, 0.05);
+    gl.setClearColor(colorRef.current);
+  });
+
+  return null;
+}
+
 function SceneContent() {
   const agents = useOfficeStore((s) => s.agents);
+  const theme = useOfficeStore((s) => s.theme);
+  const bloomEnabled = useOfficeStore((s) => s.bloomEnabled);
   const agentList = Array.from(agents.values());
 
   return (
     <>
-      <color attach="background" args={[BG_COLOR]} />
+      <BackgroundSync />
       <OrbitControls
         enableRotate={true}
         enablePan={true}
@@ -79,7 +102,7 @@ function SceneContent() {
         enableDamping
         dampingFactor={0.08}
       />
-      <Environment3D />
+      <Environment3D theme={theme} />
       <OfficeLayout3D />
       {agentList.map((agent) => (
         <AgentCharacter key={agent.id} agent={agent} />
@@ -94,6 +117,11 @@ function SceneContent() {
           return <ParentChildLine key={`line-${child.id}`} parent={parent} child={child} />;
         })}
       <MeetingLabels />
+      {bloomEnabled && (
+        <EffectComposer>
+          <Bloom intensity={1.2} luminanceThreshold={0.6} luminanceSmoothing={0.4} mipmapBlur />
+        </EffectComposer>
+      )}
     </>
   );
 }

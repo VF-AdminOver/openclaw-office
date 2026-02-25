@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { ConnectionStatus, ViewMode } from "@/gateway/types";
+import type { ConnectionStatus, ThemeMode, ViewMode } from "@/gateway/types";
 import { isWebGLAvailable } from "@/lib/webgl-detect";
 import { useOfficeStore } from "@/store/office-store";
 
@@ -11,12 +11,18 @@ const STATUS_CONFIG: Record<ConnectionStatus, { color: string; pulse: boolean; l
   error: { color: "#ef4444", pulse: false, label: "连接错误" },
 };
 
-export function TopBar() {
+interface TopBarProps {
+  isMobile?: boolean;
+}
+
+export function TopBar({ isMobile = false }: TopBarProps) {
   const connectionStatus = useOfficeStore((s) => s.connectionStatus);
   const connectionError = useOfficeStore((s) => s.connectionError);
   const metrics = useOfficeStore((s) => s.globalMetrics);
   const viewMode = useOfficeStore((s) => s.viewMode);
   const setViewMode = useOfficeStore((s) => s.setViewMode);
+  const theme = useOfficeStore((s) => s.theme);
+  const setTheme = useOfficeStore((s) => s.setTheme);
 
   const webglAvailable = useMemo(() => isWebGLAvailable(), []);
   const statusCfg = STATUS_CONFIG[connectionStatus];
@@ -32,7 +38,9 @@ export function TopBar() {
         viewMode={viewMode}
         setViewMode={setViewMode}
         webglAvailable={webglAvailable}
+        isMobile={isMobile}
       />
+      <ThemeToggle theme={theme} setTheme={setTheme} />
 
       <div className="mx-8 flex items-center gap-6 text-sm text-gray-500">
         <span>
@@ -66,10 +74,12 @@ function ViewModeSwitch({
   viewMode,
   setViewMode,
   webglAvailable,
+  isMobile,
 }: {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
   webglAvailable: boolean;
+  isMobile?: boolean;
 }) {
   const modes: { key: ViewMode; label: string }[] = [
     { key: "2d", label: "2D" },
@@ -80,13 +90,18 @@ function ViewModeSwitch({
     <div className="ml-6 flex items-center rounded-md bg-gray-100 p-0.5">
       {modes.map(({ key, label }) => {
         const isActive = viewMode === key;
-        const disabled = key === "3d" && !webglAvailable;
+        const disabled = key === "3d" && (!webglAvailable || isMobile);
+        const title = disabled
+          ? isMobile
+            ? "小屏幕不支持 3D 模式"
+            : "当前浏览器不支持 3D 渲染"
+          : `切换到 ${label} 视图`;
         return (
           <button
             key={key}
             onClick={() => !disabled && setViewMode(key)}
             disabled={disabled}
-            title={disabled ? "当前浏览器不支持 3D 渲染" : `切换到 ${label} 视图`}
+            title={title}
             className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
               isActive
                 ? "bg-blue-600 text-white shadow-sm"
@@ -100,6 +115,18 @@ function ViewModeSwitch({
         );
       })}
     </div>
+  );
+}
+
+function ThemeToggle({ theme, setTheme }: { theme: ThemeMode; setTheme: (t: ThemeMode) => void }) {
+  return (
+    <button
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      title={theme === "light" ? "切换到暗色模式" : "切换到亮色模式"}
+      className="ml-2 flex h-7 w-7 items-center justify-center rounded-md text-base transition-colors hover:bg-gray-200"
+    >
+      {theme === "light" ? "🌙" : "☀️"}
+    </button>
   );
 }
 

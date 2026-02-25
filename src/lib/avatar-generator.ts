@@ -1,4 +1,4 @@
-const PALETTE = [
+export const PALETTE = [
   "#ef4444",
   "#f97316",
   "#f59e0b",
@@ -50,4 +50,39 @@ export function generateAvatar(agentId: string, agentName?: string): AvatarInfo 
 export function generateAvatar3dColor(agentId: string): string {
   const hash = hashString(agentId);
   return PALETTE[hash % PALETTE.length];
+}
+
+// --- SVG Avatar ---
+
+export type FaceShape = "round" | "square" | "oval";
+export type HairStyle = "short" | "spiky" | "side-part" | "curly" | "buzz";
+export type EyeStyle = "dot" | "line" | "wide";
+
+const FACE_SHAPES: FaceShape[] = ["round", "square", "oval"];
+const HAIR_STYLES: HairStyle[] = ["short", "spiky", "side-part", "curly", "buzz"];
+const EYE_STYLES: EyeStyle[] = ["dot", "line", "wide"];
+const SKIN_COLORS = ["#fde2c8", "#f5c5a0", "#d4956b", "#a0714f", "#6b4226", "#ffe0bd"];
+const HAIR_COLORS = ["#2c1b0e", "#5a3214", "#c2884a", "#e8c068"];
+
+export interface SvgAvatarData {
+  faceShape: FaceShape;
+  hairStyle: HairStyle;
+  eyeStyle: EyeStyle;
+  skinColor: string;
+  hairColor: string;
+  shirtColor: string;
+}
+
+export function generateSvgAvatar(agentId: string): SvgAvatarData {
+  const h = hashString(agentId);
+  const bits = (offset: number, count: number) => (h >>> offset) % count;
+
+  return {
+    faceShape: FACE_SHAPES[bits(0, FACE_SHAPES.length)],
+    hairStyle: HAIR_STYLES[bits(3, HAIR_STYLES.length)],
+    eyeStyle: EYE_STYLES[bits(6, EYE_STYLES.length)],
+    skinColor: SKIN_COLORS[bits(8, SKIN_COLORS.length)],
+    hairColor: HAIR_COLORS[bits(11, HAIR_COLORS.length)],
+    shirtColor: PALETTE[h % PALETTE.length],
+  };
 }

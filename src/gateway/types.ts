@@ -198,6 +198,23 @@ export type ConnectionStatus =
 // --- Store ---
 
 export type ViewMode = "2d" | "3d";
+export type ThemeMode = "light" | "dark";
+
+export type ContextMenuState = {
+  agentId: string;
+  position: { x: number; y: number };
+} | null;
+
+export type ForceActionDialogState = {
+  agentId: string;
+  mode: "send-message" | "kill";
+} | null;
+
+export interface TokenSnapshot {
+  timestamp: number;
+  total: number;
+  byAgent: Record<string, number>;
+}
 
 export interface OfficeStore {
   agents: Map<string, VisualAgent>;
@@ -210,6 +227,13 @@ export interface OfficeStore {
   eventHistory: EventHistoryItem[];
   sidebarCollapsed: boolean;
   lastSessionsSnapshot: SessionSnapshot | null;
+  theme: ThemeMode;
+  bloomEnabled: boolean;
+  operatorScopes: string[];
+  contextMenu: ContextMenuState;
+  forceActionDialog: ForceActionDialogState;
+  tokenHistory: TokenSnapshot[];
+  agentCosts: Record<string, number>;
 
   // runId → agentId 映射
   runIdMap: Map<string, string>;
@@ -241,9 +265,24 @@ export interface OfficeStore {
   setViewMode: (mode: ViewMode) => void;
   setConnectionStatus: (status: ConnectionStatus, error?: string) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  setTheme: (theme: ThemeMode) => void;
+  setBloomEnabled: (enabled: boolean) => void;
+
+  // Force Action
+  setOperatorScopes: (scopes: string[]) => void;
+  openContextMenu: (agentId: string, position: { x: number; y: number }) => void;
+  closeContextMenu: () => void;
+  openForceActionDialog: (agentId: string, mode: "send-message" | "kill") => void;
+  closeForceActionDialog: () => void;
+  pushTokenSnapshot: (snapshot: TokenSnapshot) => void;
+  setAgentCosts: (costs: Record<string, number>) => void;
 
   // 指标
   updateMetrics: () => void;
+}
+
+export function hasOperatorPermission(scopes: string[]): boolean {
+  return scopes.includes("operator") || scopes.length === 0;
 }
 
 // --- 错误 ---

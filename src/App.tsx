@@ -2,6 +2,7 @@ import { lazy, Suspense, useState, useEffect } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { FloorPlan } from "@/components/office-2d/FloorPlan";
 import { useGatewayConnection } from "@/hooks/useGatewayConnection";
+import { useResponsive } from "@/hooks/useResponsive";
 import { useOfficeStore } from "@/store/office-store";
 
 const Scene3D = lazy(() => import("@/components/office-3d/Scene3D"));
@@ -49,15 +50,41 @@ function OfficeView() {
   );
 }
 
+function ThemeSync() {
+  const theme = useOfficeStore((s) => s.theme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  return null;
+}
+
 export function App() {
   const gatewayUrl = import.meta.env.VITE_GATEWAY_URL || "ws://localhost:18789";
   const gatewayToken = import.meta.env.VITE_GATEWAY_TOKEN || "";
+  const { isMobile } = useResponsive();
+  const setViewMode = useOfficeStore((s) => s.setViewMode);
 
-  useGatewayConnection({ url: gatewayUrl, token: gatewayToken });
+  const { wsClient } = useGatewayConnection({ url: gatewayUrl, token: gatewayToken });
+
+  useEffect(() => {
+    if (isMobile) {
+      setViewMode("2d");
+    }
+  }, [isMobile, setViewMode]);
 
   return (
-    <AppShell>
-      <OfficeView />
-    </AppShell>
+    <>
+      <ThemeSync />
+      <AppShell wsClient={wsClient} isMobile={isMobile}>
+        <OfficeView />
+      </AppShell>
+    </>
   );
 }

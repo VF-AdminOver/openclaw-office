@@ -1,5 +1,7 @@
-import { useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import type { ThemeMode } from "@/gateway/types";
 
 const WALL_HEIGHT = 2.8;
 const WALL_THICKNESS = 0.12;
@@ -161,12 +163,70 @@ function ServerRack({ position }: { position: [number, number, number] }) {
   );
 }
 
-export function Environment3D() {
+const LIGHT_PARAMS = {
+  ambient: { intensity: 0.65, color: new THREE.Color("#f5f0e8") },
+  main: { intensity: 1.2, color: new THREE.Color("#fff8ee") },
+  fill: { intensity: 0.4, color: new THREE.Color("#dde4f0") },
+  hemi: { intensity: 0.4 },
+} as const;
+
+const DARK_PARAMS = {
+  ambient: { intensity: 0.2, color: new THREE.Color("#1a1a2e") },
+  main: { intensity: 0.4, color: new THREE.Color("#8899bb") },
+  fill: { intensity: 0.15, color: new THREE.Color("#2a2a4a") },
+  hemi: { intensity: 0.15 },
+} as const;
+
+const LERP_SPEED = 4;
+
+function ThemeLighting({ theme }: { theme: ThemeMode }) {
+  const ambientRef = useRef<THREE.AmbientLight>(null);
+  const mainRef = useRef<THREE.DirectionalLight>(null);
+  const fillRef = useRef<THREE.DirectionalLight>(null);
+  const hemiRef = useRef<THREE.HemisphereLight>(null);
+
+  const target = theme === "light" ? LIGHT_PARAMS : DARK_PARAMS;
+
+  useFrame((_, delta) => {
+    const t = Math.min(delta * LERP_SPEED, 1);
+    if (ambientRef.current) {
+      ambientRef.current.intensity = THREE.MathUtils.lerp(
+        ambientRef.current.intensity,
+        target.ambient.intensity,
+        t,
+      );
+      ambientRef.current.color.lerp(target.ambient.color, t);
+    }
+    if (mainRef.current) {
+      mainRef.current.intensity = THREE.MathUtils.lerp(
+        mainRef.current.intensity,
+        target.main.intensity,
+        t,
+      );
+      mainRef.current.color.lerp(target.main.color, t);
+    }
+    if (fillRef.current) {
+      fillRef.current.intensity = THREE.MathUtils.lerp(
+        fillRef.current.intensity,
+        target.fill.intensity,
+        t,
+      );
+      fillRef.current.color.lerp(target.fill.color, t);
+    }
+    if (hemiRef.current) {
+      hemiRef.current.intensity = THREE.MathUtils.lerp(
+        hemiRef.current.intensity,
+        target.hemi.intensity,
+        t,
+      );
+    }
+  });
+
   return (
-    <group>
-      {/* === Lighting — bright, warm office === */}
-      <ambientLight intensity={0.65} color="#f5f0e8" />
+    <>
+      <ambientLight ref={ambientRef} intensity={0.65} color="#f5f0e8" />
       <directionalLight
+        ref={mainRef}
         position={[12, 18, 10]}
         intensity={1.2}
         castShadow
@@ -179,8 +239,41 @@ export function Environment3D() {
         shadow-bias={-0.001}
         color="#fff8ee"
       />
-      <directionalLight position={[-8, 10, -5]} intensity={0.4} color="#dde4f0" />
-      <hemisphereLight args={["#e0e8f5", "#b0a090", 0.4]} />
+      <directionalLight ref={fillRef} position={[-8, 10, -5]} intensity={0.4} color="#dde4f0" />
+      <hemisphereLight ref={hemiRef} args={["#e0e8f5", "#b0a090", 0.4]} />
+      {theme === "dark" && (
+        <>
+          <pointLight
+            position={[3, 1.2, 2]}
+            intensity={0.6}
+            color="#ffd599"
+            distance={5}
+            decay={2}
+          />
+          <pointLight
+            position={[12, 1.2, 4]}
+            intensity={0.6}
+            color="#ffd599"
+            distance={5}
+            decay={2}
+          />
+          <pointLight
+            position={[6, 1.2, 10]}
+            intensity={0.4}
+            color="#ffd599"
+            distance={4}
+            decay={2}
+          />
+        </>
+      )}
+    </>
+  );
+}
+
+export function Environment3D({ theme = "dark" as ThemeMode }: { theme?: ThemeMode }) {
+  return (
+    <group>
+      <ThemeLighting theme={theme} />
 
       {/* === Ground / Base Platform === */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8, -0.08, 6]} receiveShadow>

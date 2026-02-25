@@ -3,7 +3,7 @@ import { AgentDetailPanel } from "@/components/panels/AgentDetailPanel";
 import { EventTimeline } from "@/components/panels/EventTimeline";
 import { MetricsPanel } from "@/components/panels/MetricsPanel";
 import { SubAgentPanel } from "@/components/panels/SubAgentPanel";
-import { Avatar } from "@/components/shared/Avatar";
+import { SvgAvatar } from "@/components/shared/SvgAvatar";
 import type { AgentVisualStatus } from "@/gateway/types";
 import { STATUS_COLORS, STATUS_LABELS } from "@/lib/constants";
 import { useOfficeStore } from "@/store/office-store";
@@ -109,7 +109,7 @@ export function Sidebar() {
               selectedAgentId === agent.id ? "bg-blue-50" : ""
             }`}
           >
-            <Avatar agentId={agent.id} agentName={agent.name} size={28} />
+            <SvgAvatar agentId={agent.id} size={28} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium text-gray-800">{agent.name}</div>
               <div className="flex items-center gap-1.5">

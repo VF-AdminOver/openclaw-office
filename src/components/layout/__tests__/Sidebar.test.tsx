@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, beforeEach } from "vitest";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useOfficeStore } from "@/store/office-store";
@@ -62,7 +62,9 @@ describe("Sidebar", () => {
     });
 
     render(<Sidebar />);
-    fireEvent.click(screen.getByText("活跃"));
+    const searchSection = screen.getByPlaceholderText("搜索 Agent...").parentElement;
+    const activeFilter = within(searchSection!).getByText("活跃");
+    fireEvent.click(activeFilter);
 
     expect(screen.getAllByText("Coder").length).toBeGreaterThan(0);
     expect(screen.queryByText("Reviewer")).not.toBeInTheDocument();

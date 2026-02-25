@@ -1,6 +1,31 @@
+import { lazy, Suspense, useState } from "react";
 import { useOfficeStore } from "@/store/office-store";
 
+const TokenLineChart = lazy(() =>
+  import("./TokenLineChart").then((m) => ({ default: m.TokenLineChart })),
+);
+const CostPieChart = lazy(() =>
+  import("./CostPieChart").then((m) => ({ default: m.CostPieChart })),
+);
+const NetworkGraph = lazy(() =>
+  import("./NetworkGraph").then((m) => ({ default: m.NetworkGraph })),
+);
+const ActivityHeatmap = lazy(() =>
+  import("./ActivityHeatmap").then((m) => ({ default: m.ActivityHeatmap })),
+);
+
+function TabSpinner() {
+  return (
+    <div className="flex min-h-[200px] items-center justify-center">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+    </div>
+  );
+}
+
+type TabId = "overview" | "trend" | "topology" | "activity";
+
 export function MetricsPanel() {
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
   const metrics = useOfficeStore((s) => s.globalMetrics);
 
   const cards = [
@@ -26,16 +51,61 @@ export function MetricsPanel() {
     },
   ];
 
+  const tabs: { id: TabId; label: string }[] = [
+    { id: "overview", label: "概览" },
+    { id: "trend", label: "趋势" },
+    { id: "topology", label: "拓扑" },
+    { id: "activity", label: "活跃" },
+  ];
+
   return (
-    <div className="grid grid-cols-2 gap-1.5 border-b border-gray-100 p-3">
-      {cards.map((card) => (
-        <div key={card.label} className="rounded-lg bg-gray-50 px-2 py-1.5 text-center">
-          <div className="text-lg font-bold" style={{ color: card.color }}>
-            {card.value}
+    <div className="flex flex-col border-b border-gray-100">
+      <div className="grid grid-cols-2 gap-1.5 p-3">
+        {cards.map((card) => (
+          <div key={card.label} className="rounded-lg bg-gray-50 px-2 py-1.5 text-center">
+            <div className="text-lg font-bold" style={{ color: card.color }}>
+              {card.value}
+            </div>
+            <div className="text-[10px] text-gray-500">{card.label}</div>
           </div>
-          <div className="text-[10px] text-gray-500">{card.label}</div>
-        </div>
-      ))}
+        ))}
+      </div>
+      <div className="flex gap-1 border-t border-gray-100 px-2 py-1">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setActiveTab(t.id)}
+            className={`rounded px-2 py-1 text-xs ${
+              activeTab === t.id ? "bg-gray-200 font-medium" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="min-h-[200px] p-2">
+        {activeTab === "overview" && (
+          <Suspense fallback={<TabSpinner />}>
+            <CostPieChart />
+          </Suspense>
+        )}
+        {activeTab === "trend" && (
+          <Suspense fallback={<TabSpinner />}>
+            <TokenLineChart />
+          </Suspense>
+        )}
+        {activeTab === "topology" && (
+          <Suspense fallback={<TabSpinner />}>
+            <NetworkGraph />
+          </Suspense>
+        )}
+        {activeTab === "activity" && (
+          <Suspense fallback={<TabSpinner />}>
+            <ActivityHeatmap />
+          </Suspense>
+        )}
+      </div>
     </div>
   );
 }

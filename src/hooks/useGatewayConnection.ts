@@ -10,6 +10,7 @@ import { GatewayWsClient } from "@/gateway/ws-client";
 import { EventThrottle } from "@/lib/event-throttle";
 import { useOfficeStore } from "@/store/office-store";
 import { useSubAgentPoller } from "./useSubAgentPoller";
+import { useUsagePoller } from "./useUsagePoller";
 
 interface UseGatewayConnectionOptions {
   url: string;
@@ -24,6 +25,7 @@ export function useGatewayConnection({ url, token }: UseGatewayConnectionOptions
   const setConnectionStatus = useOfficeStore((s) => s.setConnectionStatus);
   const initAgents = useOfficeStore((s) => s.initAgents);
   const processAgentEvent = useOfficeStore((s) => s.processAgentEvent);
+  const setOperatorScopes = useOfficeStore((s) => s.setOperatorScopes);
 
   useEffect(() => {
     if (!url) {
@@ -53,6 +55,9 @@ export function useGatewayConnection({ url, token }: UseGatewayConnectionOptions
 
       if (status === "connected") {
         initAgentsFromSnapshot(ws, initAgents);
+        const snapshot = ws.getSnapshot();
+        const scopes = (snapshot as Record<string, unknown>)?.scopes;
+        setOperatorScopes(Array.isArray(scopes) ? (scopes as string[]) : ["operator"]);
       }
     });
 
@@ -77,9 +82,10 @@ export function useGatewayConnection({ url, token }: UseGatewayConnectionOptions
       rpcRef.current = null;
       throttleRef.current = null;
     };
-  }, [url, token, setConnectionStatus, initAgents, processAgentEvent]);
+  }, [url, token, setConnectionStatus, initAgents, processAgentEvent, setOperatorScopes]);
 
   useSubAgentPoller(rpcRef);
+  useUsagePoller(rpcRef);
 
   return { wsClient: wsRef, rpcClient: rpcRef };
 }

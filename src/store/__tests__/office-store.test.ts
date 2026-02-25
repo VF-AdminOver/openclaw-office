@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { AgentEventPayload } from "@/gateway/types";
 import { useOfficeStore } from "@/store/office-store";
 
@@ -20,6 +20,13 @@ function resetStore() {
     eventHistory: [],
     sidebarCollapsed: false,
     lastSessionsSnapshot: null,
+    theme: "dark",
+    bloomEnabled: true,
+    operatorScopes: [],
+    contextMenu: null,
+    forceActionDialog: null,
+    tokenHistory: [],
+    agentCosts: {},
     runIdMap: new Map(),
     sessionKeyMap: new Map(),
   });
@@ -175,6 +182,43 @@ describe("office-store", () => {
       useOfficeStore.getState().setViewMode("3d");
       useOfficeStore.getState().setViewMode("2d");
       expect(useOfficeStore.getState().viewMode).toBe("2d");
+    });
+  });
+
+  describe("theme", () => {
+    it("defaults to dark", () => {
+      expect(useOfficeStore.getState().theme).toBe("dark");
+    });
+
+    it("setTheme switches to light", () => {
+      useOfficeStore.getState().setTheme("light");
+      expect(useOfficeStore.getState().theme).toBe("light");
+    });
+
+    it("setTheme persists to localStorage", () => {
+      const spy = vi.spyOn(Storage.prototype, "setItem");
+      useOfficeStore.getState().setTheme("light");
+      expect(spy).toHaveBeenCalledWith("openclaw-theme", "light");
+      spy.mockRestore();
+    });
+
+    it("setTheme switches back to dark", () => {
+      useOfficeStore.getState().setTheme("light");
+      useOfficeStore.getState().setTheme("dark");
+      expect(useOfficeStore.getState().theme).toBe("dark");
+    });
+  });
+
+  describe("bloomEnabled", () => {
+    it("defaults to true (normal DPR)", () => {
+      expect(useOfficeStore.getState().bloomEnabled).toBe(true);
+    });
+
+    it("setBloomEnabled toggles", () => {
+      useOfficeStore.getState().setBloomEnabled(false);
+      expect(useOfficeStore.getState().bloomEnabled).toBe(false);
+      useOfficeStore.getState().setBloomEnabled(true);
+      expect(useOfficeStore.getState().bloomEnabled).toBe(true);
     });
   });
 

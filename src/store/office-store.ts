@@ -10,10 +10,14 @@ import type {
   AgentVisualStatus,
   CollaborationLink,
   ConnectionStatus,
+  ContextMenuState,
   EventHistoryItem,
+  ForceActionDialogState,
   OfficeStore,
   SessionSnapshot,
   SubAgentInfo,
+  ThemeMode,
+  TokenSnapshot,
   ViewMode,
   VisualAgent,
 } from "@/gateway/types";
@@ -23,6 +27,25 @@ import { computeMetrics } from "./metrics-reducer";
 
 const EVENT_HISTORY_LIMIT = 200;
 const LINK_TIMEOUT_MS = 60_000;
+const THEME_STORAGE_KEY = "openclaw-theme";
+
+function getInitialTheme(): ThemeMode {
+  if (typeof window === "undefined") {
+    return "dark";
+  }
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  if (stored === "light" || stored === "dark") {
+    return stored;
+  }
+  return "dark";
+}
+
+function getInitialBloom(): boolean {
+  if (typeof window === "undefined") {
+    return true;
+  }
+  return window.devicePixelRatio >= 1.5;
+}
 
 function createVisualAgent(
   id: string,
@@ -72,6 +95,13 @@ export const useOfficeStore = create<OfficeStore>()(
     eventHistory: [],
     sidebarCollapsed: false,
     lastSessionsSnapshot: null,
+    theme: getInitialTheme(),
+    bloomEnabled: getInitialBloom(),
+    operatorScopes: [] as string[],
+    contextMenu: null as ContextMenuState,
+    forceActionDialog: null as ForceActionDialogState,
+    tokenHistory: [] as TokenSnapshot[],
+    agentCosts: {} as Record<string, number>,
     runIdMap: new Map(),
     sessionKeyMap: new Map(),
 
@@ -278,6 +308,69 @@ export const useOfficeStore = create<OfficeStore>()(
     setSidebarCollapsed: (collapsed: boolean) => {
       set((state) => {
         state.sidebarCollapsed = collapsed;
+      });
+    },
+
+    setTheme: (theme: ThemeMode) => {
+      set((state) => {
+        state.theme = theme;
+      });
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
+      } catch {
+        // localStorage unavailable
+      }
+    },
+
+    setBloomEnabled: (enabled: boolean) => {
+      set((state) => {
+        state.bloomEnabled = enabled;
+      });
+    },
+
+    setOperatorScopes: (scopes: string[]) => {
+      set((state) => {
+        state.operatorScopes = scopes;
+      });
+    },
+
+    openContextMenu: (agentId: string, position: { x: number; y: number }) => {
+      set((state) => {
+        state.contextMenu = { agentId, position };
+      });
+    },
+
+    closeContextMenu: () => {
+      set((state) => {
+        state.contextMenu = null;
+      });
+    },
+
+    openForceActionDialog: (agentId: string, mode: "send-message" | "kill") => {
+      set((state) => {
+        state.forceActionDialog = { agentId, mode };
+        state.contextMenu = null;
+      });
+    },
+
+    closeForceActionDialog: () => {
+      set((state) => {
+        state.forceActionDialog = null;
+      });
+    },
+
+    pushTokenSnapshot: (snapshot: TokenSnapshot) => {
+      set((state) => {
+        state.tokenHistory.push(snapshot);
+        if (state.tokenHistory.length > 30) {
+          state.tokenHistory = state.tokenHistory.slice(-30);
+        }
+      });
+    },
+
+    setAgentCosts: (costs: Record<string, number>) => {
+      set((state) => {
+        state.agentCosts = costs;
       });
     },
 

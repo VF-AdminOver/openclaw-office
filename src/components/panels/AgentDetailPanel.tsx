@@ -1,5 +1,5 @@
 import Markdown from "react-markdown";
-import { Avatar } from "@/components/shared/Avatar";
+import { SvgAvatar } from "@/components/shared/SvgAvatar";
 import { STATUS_COLORS, STATUS_LABELS } from "@/lib/constants";
 import { useOfficeStore } from "@/store/office-store";
 
@@ -30,7 +30,7 @@ export function AgentDetailPanel() {
 
       <div className="max-h-64 overflow-y-auto px-3 py-2">
         <div className="mb-3 flex items-center gap-2">
-          <Avatar agentId={agent.id} agentName={agent.name} size={36} />
+          <SvgAvatar agentId={agent.id} size={36} />
           <div>
             <div className="text-sm font-medium text-gray-800">{agent.name}</div>
             <div className="flex items-center gap-1">
