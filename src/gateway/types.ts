@@ -203,7 +203,7 @@ export type ConnectionStatus =
 
 export type ViewMode = "2d" | "3d";
 export type ThemeMode = "light" | "dark";
-export type PageId = "office" | "dashboard" | "channels" | "skills" | "cron" | "settings";
+export type PageId = "office" | "dashboard" | "agents" | "channels" | "skills" | "cron" | "settings";
 
 export interface TokenSnapshot {
   timestamp: number;
@@ -288,8 +288,13 @@ export interface ErrorShape {
 export interface AgentSummary {
   id: string;
   name: string;
+  default?: boolean;
   identity?: {
     name?: string;
+    theme?: string;
+    emoji?: string;
+    avatar?: string;
+    avatarUrl?: string;
   };
 }
 

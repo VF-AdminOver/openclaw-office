@@ -2,6 +2,15 @@
 // 提供 mock 与 gateway（WebSocket）两种实现
 
 import type {
+  AgentCreateParams,
+  AgentCreateResult,
+  AgentDeleteParams,
+  AgentDeleteResult,
+  AgentFileContent,
+  AgentFilesListResult,
+  AgentFileSetResult,
+  AgentUpdateParams,
+  AgentUpdateResult,
   ChannelInfo,
   ChatMessage,
   ChatSendParams,
@@ -62,6 +71,12 @@ export interface GatewayAdapter {
 
   // Agents & Tools
   agentsList(): Promise<AgentsListResponse>;
+  agentsCreate(params: AgentCreateParams): Promise<AgentCreateResult>;
+  agentsUpdate(params: AgentUpdateParams): Promise<AgentUpdateResult>;
+  agentsDelete(params: AgentDeleteParams): Promise<AgentDeleteResult>;
+  agentsFilesList(agentId: string): Promise<AgentFilesListResult>;
+  agentsFilesGet(agentId: string, name: string): Promise<AgentFileContent>;
+  agentsFilesSet(agentId: string, name: string, content: string): Promise<AgentFileSetResult>;
   toolsCatalog(): Promise<ToolCatalog>;
   usageStatus(): Promise<UsageInfo>;
 

@@ -199,6 +199,84 @@ export type ChatStreamEvent =
   | { type: "stream.delta"; runId: string; text: string }
   | { type: "stream.end"; runId: string; aborted?: boolean };
 
+// --- Agent CRUD types ---
+
+export interface AgentCreateParams {
+  name: string;
+  workspace: string;
+  emoji?: string;
+  avatar?: string;
+}
+
+export interface AgentCreateResult {
+  ok: boolean;
+  agentId: string;
+  name: string;
+  workspace: string;
+}
+
+export type AgentModelConfig =
+  | string
+  | { primary?: string; fallbacks?: string[] };
+
+export interface AgentUpdateParams {
+  agentId: string;
+  name?: string;
+  workspace?: string;
+  model?: AgentModelConfig;
+  avatar?: string;
+}
+
+export interface AgentUpdateResult {
+  ok: boolean;
+  agentId: string;
+}
+
+export interface AgentDeleteParams {
+  agentId: string;
+  deleteFiles?: boolean;
+}
+
+export interface AgentDeleteResult {
+  ok: boolean;
+  agentId: string;
+  removedBindings?: number;
+}
+
+export interface AgentFileInfo {
+  name: string;
+  size: number;
+  modifiedAt: string | number;
+}
+
+export interface AgentFilesListResult {
+  agentId: string;
+  workspace: string;
+  files: AgentFileInfo[];
+}
+
+export interface AgentFileContent {
+  agentId: string;
+  workspace: string;
+  file: {
+    name: string;
+    content: string;
+    size: number;
+    modifiedAt: string;
+  };
+}
+
+export interface AgentFileSetResult {
+  ok: boolean;
+  agentId: string;
+  workspace: string;
+  file: {
+    name: string;
+    size: number;
+    modifiedAt: string;
+  };
+}
+
 // --- Config / Status / Update types (Phase D) ---
 
 export interface ConfigSnapshot {

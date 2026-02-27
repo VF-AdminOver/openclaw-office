@@ -343,5 +343,105 @@
       "builtIn": "built-in",
       "marketplace": "marketplace"
     }
+  },
+  "agents": {
+    "title": "Agent Management",
+    "description": "Manage agent configuration, core files, and model settings",
+    "configured": "{{count}} configured.",
+    "refresh": "Refresh",
+    "searchPlaceholder": "Search agents...",
+    "noAgents": "No agents",
+    "noAgentsDesc": "No agents configured yet",
+    "selectAgent": "Select an agent",
+    "selectAgentDesc": "Select an agent from the list to view details",
+    "defaultBadge": "DEFAULT",
+    "addAgent": "Add Agent",
+    "tabs": {
+      "overview": "Overview",
+      "files": "Files",
+      "tools": "Tools",
+      "skills": "Skills",
+      "channels": "Channels",
+      "cronJobs": "Cron Jobs"
+    },
+    "overview": {
+      "title": "Basic Info",
+      "agentId": "Agent ID",
+      "name": "Name",
+      "workspace": "Workspace",
+      "isDefault": "Default Agent",
+      "yes": "Yes",
+      "no": "No",
+      "modelConfig": "Model Configuration",
+      "primaryModel": "Primary Model",
+      "primaryModelPlaceholder": "Select primary model...",
+      "fallbackModels": "Fallback Models",
+      "fallbackPlaceholder": "Select fallback model...",
+      "addFallback": "Add Fallback",
+      "save": "Save",
+      "saving": "Saving...",
+      "saveSuccess": "Saved successfully",
+      "saveError": "Failed to save",
+      "deleteAgent": "Delete Agent",
+      "cannotDeleteDefault": "Cannot delete default agent"
+    },
+    "files": {
+      "title": "Core Files",
+      "description": "Bootstrap persona, identity, and tool guidance.",
+      "workspace": "Workspace",
+      "noFiles": "No files",
+      "selectFile": "Select a file to view its content",
+      "content": "Content",
+      "reset": "Reset",
+      "save": "Save",
+      "saving": "Saving...",
+      "saveSuccess": "File saved",
+      "saveError": "Failed to save",
+      "unsavedChanges": "Unsaved changes"
+    },
+    "tools": {
+      "title": "Tool Policy",
+      "profile": "Profile",
+      "allowList": "Allow List",
+      "denyList": "Deny List",
+      "noConfig": "No tool policy configured for this agent",
+      "all": "All"
+    },
+    "skills": {
+      "title": "Skills Configuration",
+      "noRestriction": "No skill restrictions (uses all enabled skills)",
+      "defaultConfig": "Uses default skill configuration",
+      "allowedSkills": "Allowed Skills"
+    },
+    "channels": {
+      "title": "Channel Routing",
+      "noBindings": "No channels bound to this agent"
+    },
+    "cronJobs": {
+      "title": "Cron Jobs",
+      "noCronJobs": "No cron jobs for this agent"
+    },
+    "createDialog": {
+      "title": "Add New Agent",
+      "name": "Name",
+      "namePlaceholder": "Enter agent name",
+      "nameRequired": "Name is required",
+      "workspace": "Workspace Path",
+      "workspacePlaceholder": "e.g. ~/.openclaw/workspace-myagent",
+      "workspaceRequired": "Workspace path is required",
+      "emoji": "Emoji",
+      "emojiPlaceholder": "e.g. 🤖",
+      "cancel": "Cancel",
+      "create": "Create",
+      "creating": "Creating..."
+    },
+    "deleteDialog": {
+      "title": "Delete Agent",
+      "confirm": "Are you sure you want to delete agent \"{{name}}\"? This action cannot be undone.",
+      "deleteFiles": "Also delete workspace files",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    }
   }
 }

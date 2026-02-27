@@ -1,6 +1,6 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Home, Radio, Puzzle, Clock, Settings } from "lucide-react";
+import { Home, Bot, Radio, Puzzle, Clock, Settings } from "lucide-react";
 import { TopBar } from "./TopBar";
 
 export function ConsoleLayout() {
@@ -10,6 +10,7 @@ export function ConsoleLayout() {
 
   const sidebarNavItems = [
     { path: "/dashboard", labelKey: "consoleNav.dashboard", icon: Home },
+    { path: "/agents", labelKey: "consoleNav.agents", icon: Bot },
     { path: "/channels", labelKey: "consoleNav.channels", icon: Radio },
     { path: "/skills", labelKey: "consoleNav.skills", icon: Puzzle },
     { path: "/cron", labelKey: "consoleNav.cron", icon: Clock },

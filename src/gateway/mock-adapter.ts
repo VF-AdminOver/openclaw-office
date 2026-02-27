@@ -1,5 +1,14 @@
 import type { GatewayAdapter, AdapterEventHandler, SkillUpdatePatch } from "./adapter";
 import type {
+  AgentCreateParams,
+  AgentCreateResult,
+  AgentDeleteParams,
+  AgentDeleteResult,
+  AgentFileContent,
+  AgentFilesListResult,
+  AgentFileSetResult,
+  AgentUpdateParams,
+  AgentUpdateResult,
   ChannelInfo,
   ChatMessage,
   ChatSendParams,
@@ -87,7 +96,9 @@ function mockConfigData(): Record<string, unknown> {
           apiKey: REDACTED,
           api: "anthropic-messages",
           models: [
-            { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", reasoning: true, input: ["text", "image"], cost: { input: 3, output: 15, cacheRead: 0.3, cacheWrite: 3.75 }, contextWindow: 200000, maxTokens: 16384 },
+            { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 16384 },
+            { id: "claude-opus-4-20250514", name: "Claude Opus 4", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 32768 },
+            { id: "claude-3-5-haiku-20241022", name: "Claude 3.5 Haiku", reasoning: false, input: ["text", "image"], contextWindow: 200000, maxTokens: 8192 },
           ],
         },
         openai: {
@@ -95,7 +106,9 @@ function mockConfigData(): Record<string, unknown> {
           apiKey: REDACTED,
           api: "openai-responses",
           models: [
-            { id: "gpt-4o", name: "GPT-4o", reasoning: false, input: ["text", "image"], cost: { input: 2.5, output: 10, cacheRead: 1.25, cacheWrite: 0 }, contextWindow: 128000, maxTokens: 16384 },
+            { id: "gpt-4o", name: "GPT-4o", reasoning: false, input: ["text", "image"], contextWindow: 128000, maxTokens: 16384 },
+            { id: "o3", name: "o3", reasoning: true, input: ["text", "image"], contextWindow: 200000, maxTokens: 100000 },
+            { id: "gpt-4o-mini", name: "GPT-4o Mini", reasoning: false, input: ["text", "image"], contextWindow: 128000, maxTokens: 16384 },
           ],
         },
       },
@@ -323,13 +336,60 @@ export class MockAdapter implements GatewayAdapter {
 
   async agentsList(): Promise<AgentsListResponse> {
     return {
-      defaultId: "agent-main",
-      mainKey: "main",
+      defaultId: "main",
+      mainKey: "agent:main:main",
       scope: "global",
       agents: [
-        { id: "agent-main", name: "Main Agent" },
-        { id: "agent-research", name: "Research Agent" },
+        { id: "main", name: "main", default: true, identity: { name: "main", emoji: "m" } },
+        { id: "ai-researcher", name: "ResearchClaw", identity: { name: "ResearchClaw", emoji: "🔬" } },
+        { id: "coder", name: "CodeClaw", identity: { name: "CodeClaw", emoji: "💻" } },
+        { id: "ecommerce", name: "TradeClaw", identity: { name: "TradeClaw", emoji: "🛒" } },
       ],
+    };
+  }
+
+  async agentsCreate(params: AgentCreateParams): Promise<AgentCreateResult> {
+    return { ok: true, agentId: `agent-${Date.now()}`, name: params.name, workspace: params.workspace };
+  }
+
+  async agentsUpdate(params: AgentUpdateParams): Promise<AgentUpdateResult> {
+    return { ok: true, agentId: params.agentId };
+  }
+
+  async agentsDelete(params: AgentDeleteParams): Promise<AgentDeleteResult> {
+    return { ok: true, agentId: params.agentId, removedBindings: 0 };
+  }
+
+  async agentsFilesList(_agentId: string): Promise<AgentFilesListResult> {
+    const now = new Date().toISOString();
+    return {
+      agentId: _agentId,
+      workspace: `~/.openclaw/workspace`,
+      files: [
+        { name: "AGENTS.md", size: 7900, modifiedAt: now },
+        { name: "SOUL.md", size: 2048, modifiedAt: now },
+        { name: "TOOLS.md", size: 860, modifiedAt: now },
+        { name: "IDENTITY.md", size: 759, modifiedAt: now },
+        { name: "USER.md", size: 1800, modifiedAt: now },
+        { name: "HEARTBEAT.md", size: 512, modifiedAt: now },
+      ],
+    };
+  }
+
+  async agentsFilesGet(agentId: string, name: string): Promise<AgentFileContent> {
+    return {
+      agentId,
+      workspace: `~/.openclaw/workspace`,
+      file: { name, content: `# ${name}\n\nMock content for ${name}`, size: 128, modifiedAt: new Date().toISOString() },
+    };
+  }
+
+  async agentsFilesSet(agentId: string, name: string, content: string): Promise<AgentFileSetResult> {
+    return {
+      ok: true,
+      agentId,
+      workspace: `~/.openclaw/workspace`,
+      file: { name, size: content.length, modifiedAt: new Date().toISOString() },
     };
   }
 

@@ -11,6 +11,7 @@
       "channels": "渠道",
       "skills": "技能",
       "cron": "定时任务",
+      "agents": "智能体管理",
       "settings": "设置",
       "fallback": "控制台"
     },
@@ -50,6 +51,7 @@
   },
   "consoleNav": {
     "dashboard": "仪表盘",
+    "agents": "智能体",
     "channels": "渠道",
     "skills": "技能",
     "cron": "定时任务",

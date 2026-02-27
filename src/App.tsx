@@ -9,6 +9,7 @@ import { ChannelsPage } from "@/components/pages/ChannelsPage";
 import { SkillsPage } from "@/components/pages/SkillsPage";
 import { CronPage } from "@/components/pages/CronPage";
 import { SettingsPage } from "@/components/pages/SettingsPage";
+import { AgentsPage } from "@/components/pages/AgentsPage";
 import { useGatewayConnection } from "@/hooks/useGatewayConnection";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useOfficeStore } from "@/store/office-store";
@@ -78,6 +79,7 @@ function ThemeSync() {
 const PAGE_MAP: Record<string, PageId> = {
   "/": "office",
   "/dashboard": "dashboard",
+  "/agents": "agents",
   "/channels": "channels",
   "/skills": "skills",
   "/cron": "cron",
@@ -120,6 +122,7 @@ export function App() {
         </Route>
         <Route element={<ConsoleLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/agents" element={<AgentsPage />} />
           <Route path="/channels" element={<ChannelsPage />} />
           <Route path="/skills" element={<SkillsPage />} />
           <Route path="/cron" element={<CronPage />} />

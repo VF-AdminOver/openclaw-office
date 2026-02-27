@@ -27,7 +27,7 @@
     }
   },
   "channels": {
-    "title": "Channels",
+    "title": "渠道",
     "description": "管理消息渠道：Telegram、Discord、飞书 等",
     "stats": {
       "total": "总计",
@@ -109,7 +109,7 @@
     }
   },
   "skills": {
-    "title": "Skills",
+    "title": "技能",
     "description": "管理技能与插件：安装、启停、配置",
     "tabs": {
       "installed": "已安装",
@@ -176,7 +176,7 @@
     }
   },
   "cron": {
-    "title": "Cron Tasks",
+    "title": "定时任务",
     "description": "管理定时任务：创建、编辑、启停、立即执行",
     "stats": {
       "total": "总计",
@@ -224,7 +224,7 @@
     }
   },
   "settings": {
-    "title": "Settings",
+    "title": "设置",
     "description": "应用设置：主题、Provider、Gateway、更新",
     "appearance": {
       "title": "外观",
@@ -234,33 +234,33 @@
       "themeSystem": "跟随系统",
       "language": "语言",
       "langZh": "中文",
-      "langEn": "English"
+      "langEn": "英文"
     },
     "providers": {
-      "title": "AI Providers",
+      "title": "AI 提供方",
       "description": "管理 AI 模型供应商配置",
-      "add": "添加 Provider",
-      "empty": "尚未配置 AI Provider",
-      "emptyHint": "点击上方按钮添加第一个 Provider",
+      "add": "添加提供方",
+      "empty": "尚未配置 AI 提供方",
+      "emptyHint": "点击上方按钮添加第一个 AI 提供方",
       "apiKeyConfigured": "已配置",
       "apiKeyNotConfigured": "未配置",
       "models": "{{count}} 个模型",
-      "deleteTitle": "删除 Provider",
-      "deleteDescription": "确认要删除 Provider「{{name}}」吗？删除后需要重新配置。",
+      "deleteTitle": "删除提供方",
+      "deleteDescription": "确认要删除提供方「{{name}}」吗？删除后需要重新配置。",
       "addDialog": {
-        "title": "添加 Provider",
-        "selectType": "选择 Provider 类型",
-        "providerId": "Provider ID",
+        "title": "添加提供方",
+        "selectType": "选择提供方类型",
+        "providerId": "提供方 ID",
         "providerIdHint": "配置文件中的唯一标识",
-        "baseUrl": "Base URL",
+        "baseUrl": "基础 URL",
         "apiKey": "API Key",
         "apiType": "API 类型",
-        "idConflict": "该 Provider ID 已存在",
+        "idConflict": "该提供方 ID 已存在",
         "cancel": "取消",
         "save": "保存"
       },
       "editDialog": {
-        "title": "编辑 Provider",
+        "title": "编辑提供方",
         "apiKeyPlaceholder": "留空保持不变",
         "cancel": "取消",
         "save": "保存"
@@ -342,6 +342,106 @@
     "skillSource": {
       "builtIn": "内置",
       "marketplace": "市场"
+    }
+  },
+  "agents": {
+    "title": "智能体管理",
+    "description": "管理智能体配置、核心文件和模型设置",
+    "configured": "已配置 {{count}} 个",
+    "refresh": "刷新",
+    "searchPlaceholder": "搜索智能体...",
+    "noAgents": "暂无智能体",
+    "noAgentsDesc": "尚未配置任何智能体",
+    "selectAgent": "选择一个智能体",
+    "selectAgentDesc": "从左侧列表中选择一个智能体查看详情",
+    "defaultBadge": "默认",
+    "addAgent": "添加智能体",
+    "tabs": {
+      "overview": "概览",
+      "files": "文件",
+      "tools": "工具",
+      "skills": "技能",
+      "channels": "渠道",
+      "cronJobs": "定时任务"
+    },
+    "overview": {
+      "title": "基本信息",
+      "agentId": "智能体 ID",
+      "name": "名称",
+      "workspace": "工作空间",
+      "isDefault": "默认智能体",
+      "yes": "是",
+      "no": "否",
+      "modelConfig": "模型配置",
+      "primaryModel": "主模型",
+      "primaryModelPlaceholder": "选择主模型...",
+      "fallbackModels": "备选模型",
+      "fallbackPlaceholder": "选择备用模型...",
+      "addFallback": "添加备选模型",
+      "save": "保存",
+      "saving": "保存中...",
+      "saveSuccess": "保存成功",
+      "saveError": "保存失败",
+      "deleteAgent": "删除智能体",
+      "cannotDeleteDefault": "无法删除默认智能体"
+    },
+    "files": {
+      "title": "核心文件",
+      "description": "引导式角色设定、身份信息与工具使用说明。",
+      "workspace": "工作空间",
+      "noFiles": "暂无文件",
+      "selectFile": "选择一个文件查看内容",
+      "content": "内容",
+      "reset": "重置",
+      "save": "保存",
+      "saving": "保存中...",
+      "saveSuccess": "文件已保存",
+      "saveError": "保存失败",
+      "unsavedChanges": "有未保存的更改"
+    },
+    "tools": {
+      "title": "工具策略",
+      "profile": "策略配置",
+      "allowList": "允许列表",
+      "denyList": "禁止列表",
+      "noConfig": "该智能体未配置工具策略",
+      "all": "全部"
+    },
+    "skills": {
+      "title": "技能配置",
+      "noRestriction": "无技能限制（使用所有已启用技能）",
+      "defaultConfig": "使用默认技能配置",
+      "allowedSkills": "允许的技能"
+    },
+    "channels": {
+      "title": "频道路由",
+      "noBindings": "该智能体未绑定任何频道"
+    },
+    "cronJobs": {
+      "title": "定时任务",
+      "noCronJobs": "该智能体无定时任务"
+    },
+    "createDialog": {
+      "title": "添加新智能体",
+      "name": "名称",
+      "namePlaceholder": "输入智能体名称",
+      "nameRequired": "请输入名称",
+      "workspace": "工作空间路径",
+      "workspacePlaceholder": "例如: ~/.openclaw/workspace-myagent",
+      "workspaceRequired": "请输入工作空间路径",
+      "emoji": "表情",
+      "emojiPlaceholder": "例如: 🤖",
+      "cancel": "取消",
+      "create": "创建",
+      "creating": "创建中..."
+    },
+    "deleteDialog": {
+      "title": "删除智能体",
+      "confirm": "确认要删除智能体「{{name}}」吗？此操作不可逆。",
+      "deleteFiles": "同时删除工作空间文件",
+      "cancel": "取消",
+      "delete": "删除",
+      "deleting": "删除中..."
     }
   }
 }

@@ -1,5 +1,14 @@
 import type { GatewayAdapter, AdapterEventHandler, SkillUpdatePatch } from "./adapter";
 import type {
+  AgentCreateParams,
+  AgentCreateResult,
+  AgentDeleteParams,
+  AgentDeleteResult,
+  AgentFileContent,
+  AgentFilesListResult,
+  AgentFileSetResult,
+  AgentUpdateParams,
+  AgentUpdateResult,
   ChannelInfo,
   ChannelType,
   ChatMessage,
@@ -134,6 +143,30 @@ export class WsAdapter implements GatewayAdapter {
 
   async agentsList(): Promise<AgentsListResponse> {
     return this.rpcClient.request<AgentsListResponse>("agents.list");
+  }
+
+  async agentsCreate(params: AgentCreateParams): Promise<AgentCreateResult> {
+    return this.rpcClient.request<AgentCreateResult>("agents.create", params as unknown as Record<string, unknown>);
+  }
+
+  async agentsUpdate(params: AgentUpdateParams): Promise<AgentUpdateResult> {
+    return this.rpcClient.request<AgentUpdateResult>("agents.update", params as unknown as Record<string, unknown>);
+  }
+
+  async agentsDelete(params: AgentDeleteParams): Promise<AgentDeleteResult> {
+    return this.rpcClient.request<AgentDeleteResult>("agents.delete", params as unknown as Record<string, unknown>);
+  }
+
+  async agentsFilesList(agentId: string): Promise<AgentFilesListResult> {
+    return this.rpcClient.request<AgentFilesListResult>("agents.files.list", { agentId });
+  }
+
+  async agentsFilesGet(agentId: string, name: string): Promise<AgentFileContent> {
+    return this.rpcClient.request<AgentFileContent>("agents.files.get", { agentId, name });
+  }
+
+  async agentsFilesSet(agentId: string, name: string, content: string): Promise<AgentFileSetResult> {
+    return this.rpcClient.request<AgentFileSetResult>("agents.files.set", { agentId, name, content });
   }
 
   async toolsCatalog(): Promise<ToolCatalog> {

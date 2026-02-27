@@ -11,6 +11,7 @@
       "channels": "Channels",
       "skills": "Skills",
       "cron": "Cron Tasks",
+      "agents": "Agents",
       "settings": "Settings",
       "fallback": "Console"
     },
@@ -50,6 +51,7 @@
   },
   "consoleNav": {
     "dashboard": "Dashboard",
+    "agents": "Agents",
     "channels": "Channels",
     "skills": "Skills",
     "cron": "Cron Tasks",
