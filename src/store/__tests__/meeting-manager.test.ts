@@ -19,10 +19,13 @@ function makeAgent(id: string, zone: string = "desk"): VisualAgent {
     toolCallHistory: [],
     runId: null,
     isSubAgent: false,
+    isPlaceholder: false,
     parentAgentId: null,
     childAgentIds: [],
     zone: zone as "desk" | "meeting" | "hotDesk" | "lounge",
     originalPosition: null,
+    movement: null,
+    confirmed: true,
   };
 }
 

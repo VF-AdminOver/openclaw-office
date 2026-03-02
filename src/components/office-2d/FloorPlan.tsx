@@ -27,18 +27,29 @@ export function FloorPlan() {
   const colors = isDark ? ZONE_COLORS_DARK : ZONE_COLORS;
 
   const deskAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "desk" && !a.isSubAgent),
+    () => agentList.filter((a) => a.zone === "desk" && !a.isSubAgent && !a.movement && a.confirmed),
     [agentList],
   );
   const hotDeskAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "hotDesk"),
+    () => agentList.filter((a) => a.zone === "hotDesk" && !a.movement),
     [agentList],
   );
   const loungeAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "lounge"),
+    () => agentList.filter((a) => a.zone === "lounge" && !a.movement),
     [agentList],
   );
-  const meetingAgents = useMemo(() => agentList.filter((a) => a.zone === "meeting"), [agentList]);
+  const meetingAgents = useMemo(
+    () => agentList.filter((a) => a.zone === "meeting" && !a.movement),
+    [agentList],
+  );
+  const walkingAgents = useMemo(
+    () => agentList.filter((a) => a.movement !== null),
+    [agentList],
+  );
+  const corridorAgents = useMemo(
+    () => agentList.filter((a) => a.zone === "corridor" && !a.movement),
+    [agentList],
+  );
 
   const maxSubAgents = useOfficeStore((s) => s.maxSubAgents);
 
@@ -192,15 +203,25 @@ export function FloorPlan() {
           );
         })}
 
-        {/* ── Layer 7: Meeting agents ── */}
+        {/* ── Layer 7: Meeting agents (seated) ── */}
         {meetingAgents.map((agent, i) => {
           const seat = meetingSeats[i];
           if (!seat) return null;
           return <AgentAvatar key={agent.id} agent={{ ...agent, position: seat }} />;
         })}
+
+        {/* ── Layer 7b: Unconfirmed agents at entrance (semi-transparent) ── */}
+        {corridorAgents.map((agent) => (
+          <AgentAvatar key={`corridor-${agent.id}`} agent={agent} />
+        ))}
+
+        {/* ── Layer 8: Walking agents (above all zones, in corridor) ── */}
+        {walkingAgents.map((agent) => (
+          <AgentAvatar key={`walk-${agent.id}`} agent={agent} />
+        ))}
       </svg>
 
-      {/* ── Layer 8: HTML Overlay speech bubbles ── */}
+      {/* ── Layer 9: HTML Overlay speech bubbles ── */}
       {agentList
         .filter((a) => a.speechBubble)
         .map((agent) => (

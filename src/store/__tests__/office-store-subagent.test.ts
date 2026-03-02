@@ -79,30 +79,40 @@ describe("office-store Sub-Agent management", () => {
     expect(useOfficeStore.getState().selectedAgentId).toBeNull();
   });
 
-  it("moveToMeeting saves original position and updates zone", () => {
-    const { moveToMeeting } = useOfficeStore.getState();
+  it("moveToMeeting saves original position and starts movement animation", () => {
+    const { moveToMeeting, completeMovement } = useOfficeStore.getState();
     const parent = useOfficeStore.getState().agents.get("parent")!;
     const origPos = { ...parent.position };
 
     moveToMeeting("parent", { x: 890, y: 190 });
 
-    const updated = useOfficeStore.getState().agents.get("parent")!;
-    expect(updated.originalPosition).toEqual(origPos);
-    expect(updated.position).toEqual({ x: 890, y: 190 });
-    expect(updated.zone).toBe("meeting");
+    const moving = useOfficeStore.getState().agents.get("parent")!;
+    expect(moving.originalPosition).toEqual(origPos);
+    expect(moving.movement).not.toBeNull();
+    expect(moving.movement!.toZone).toBe("meeting");
+
+    // Complete the movement to reach final state
+    completeMovement("parent");
+    const arrived = useOfficeStore.getState().agents.get("parent")!;
+    expect(arrived.zone).toBe("meeting");
+    expect(arrived.movement).toBeNull();
   });
 
-  it("returnFromMeeting restores original position", () => {
-    const { moveToMeeting, returnFromMeeting } = useOfficeStore.getState();
-    const origPos = { ...useOfficeStore.getState().agents.get("parent")!.position };
+  it("returnFromMeeting starts movement back to original zone", () => {
+    const { moveToMeeting, completeMovement, returnFromMeeting } = useOfficeStore.getState();
 
     moveToMeeting("parent", { x: 890, y: 190 });
+    completeMovement("parent");
     returnFromMeeting("parent");
 
+    const returning = useOfficeStore.getState().agents.get("parent")!;
+    expect(returning.movement).not.toBeNull();
+    expect(returning.movement!.toZone).toBe("desk");
+
+    completeMovement("parent");
     const restored = useOfficeStore.getState().agents.get("parent")!;
-    expect(restored.position).toEqual(origPos);
-    expect(restored.originalPosition).toBeNull();
     expect(restored.zone).toBe("desk");
+    expect(restored.movement).toBeNull();
   });
 
   it("setSessionsSnapshot stores snapshot", () => {
@@ -132,12 +142,14 @@ describe("office-store Sub-Agent management", () => {
   });
 
   it("returnFromMeeting returns sub-agent to hotDesk", () => {
-    const { addSubAgent, updateAgent, moveToMeeting, returnFromMeeting } = useOfficeStore.getState();
+    const { addSubAgent, updateAgent, moveToMeeting, completeMovement, returnFromMeeting } = useOfficeStore.getState();
     addSubAgent("parent", mkSubInfo("sub-meet"));
     updateAgent("sub-meet", { zone: "hotDesk" });
 
     moveToMeeting("sub-meet", { x: 890, y: 190 });
+    completeMovement("sub-meet");
     returnFromMeeting("sub-meet");
+    completeMovement("sub-meet");
     const restored = useOfficeStore.getState().agents.get("sub-meet")!;
     expect(restored.zone).toBe("hotDesk");
   });

@@ -70,7 +70,7 @@ export function SessionSwitcher() {
   }, [newSession]);
 
   const displayName = formatSessionName(currentSessionKey);
-  const sortedSessions = [...sessions].sort((a, b) => b.lastActiveAt - a.lastActiveAt);
+  const sortedSessions = [...(sessions ?? [])].sort((a, b) => b.lastActiveAt - a.lastActiveAt);
 
   return (
     <div ref={dropdownRef} className="relative">
