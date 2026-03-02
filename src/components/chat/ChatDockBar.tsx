@@ -1,4 +1,4 @@
-import { ChevronUp, ChevronDown, Send, Square, Paperclip } from "lucide-react";
+import { Maximize2, Send, Square, Paperclip } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import TextareaAutosize from "react-textarea-autosize";
@@ -15,9 +15,7 @@ export function ChatDockBar() {
   const abort = useChatDockStore((s) => s.abort);
   const isStreaming = useChatDockStore((s) => s.isStreaming);
   const dockExpanded = useChatDockStore((s) => s.dockExpanded);
-  const toggleDock = useChatDockStore((s) => s.toggleDock);
   const setDockExpanded = useChatDockStore((s) => s.setDockExpanded);
-  const messages = useChatDockStore((s) => s.messages);
   const error = useChatDockStore((s) => s.error);
   const clearError = useChatDockStore((s) => s.clearError);
 
@@ -36,18 +34,14 @@ export function ChatDockBar() {
         e.preventDefault();
         handleSend();
       }
-      if (e.key === "Escape" && dockExpanded) {
-        setDockExpanded(false);
-      }
     },
-    [handleSend, isComposing, dockExpanded, setDockExpanded],
+    [handleSend, isComposing],
   );
 
-  const handleFocus = useCallback(() => {
-    if (!dockExpanded && messages.length > 0) {
-      setDockExpanded(true);
-    }
-  }, [dockExpanded, messages.length, setDockExpanded]);
+  // When dialog is expanded, show only a minimal expand bar
+  if (dockExpanded) {
+    return null;
+  }
 
   return (
     <div className="border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
@@ -70,11 +64,11 @@ export function ChatDockBar() {
           <AgentSelector />
           <button
             type="button"
-            onClick={toggleDock}
+            onClick={() => setDockExpanded(true)}
             className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-            title={dockExpanded ? t("dock.collapseDock") : t("dock.expandDock")}
+            title={t("dock.expandDock")}
           >
-            {dockExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+            <Maximize2 className="h-4 w-4" />
           </button>
         </div>
 
@@ -96,7 +90,7 @@ export function ChatDockBar() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={handleFocus}
+          onFocus={() => setDockExpanded(true)}
           onCompositionStart={() => setIsComposing(true)}
           onCompositionEnd={() => setIsComposing(false)}
           placeholder={t("dock.placeholder")}
