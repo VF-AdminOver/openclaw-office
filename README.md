@@ -33,7 +33,9 @@
 
 #### Demo Video
 
-<video src="https://raw.githubusercontent.com/WW-AI-Lab/openclaw-office/main/assets/iShot_2026-03-02_21.33.38.mp4" controls muted playsinline width="100%"></video>
+[![OpenClaw Office Demo Video](https://img.youtube.com/vi/ACXSFTSlVLY/maxresdefault.jpg)](https://youtu.be/ACXSFTSlVLY)
+
+> GitHub strips inline `<video>` tags in repository READMEs, so the stable cross-platform fallback is a clickable YouTube thumbnail.
 
 [Watch on YouTube](https://youtu.be/ACXSFTSlVLY)
 

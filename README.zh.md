@@ -33,7 +33,9 @@
 
 #### 演示视频
 
-<video src="https://raw.githubusercontent.com/WW-AI-Lab/openclaw-office/main/assets/iShot_2026-03-02_21.33.38.mp4" controls muted playsinline width="100%"></video>
+[![OpenClaw Office 演示视频](https://img.youtube.com/vi/ACXSFTSlVLY/maxresdefault.jpg)](https://youtu.be/ACXSFTSlVLY)
+
+> GitHub 会过滤仓库 README 里的内联 `<video>` 标签，所以这里改为最稳定的 YouTube 缩略图跳转方案。
 
 [在 YouTube 观看](https://youtu.be/ACXSFTSlVLY)
 
